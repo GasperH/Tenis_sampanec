@@ -1,0 +1,80 @@
+# Online Python compiler (interpreter) to run Python online.
+# Write Python 3 code in this online editor and run it.
+import numpy as np
+
+kola = []
+poraba = []
+st_kol = 3
+st_igralcev = 24
+
+for i in range(st_igralcev):
+    poraba.append([i])
+i = 0
+while i < st_kol:
+    kola.append([])
+    nabor = np.arange(st_igralcev)
+    j = 0
+    k = 0
+    while len(nabor)>0:
+        j = j+1
+        k = k+1
+        
+        
+        if k == 100:
+            kola = [[]]
+            nabor = np.arange(st_igralcev)
+            poraba = []
+            for i in range(st_igralcev):
+                poraba.append([i])
+            j = 0
+            i = 0
+            k = 0
+        
+        # if j == 1000:
+            # kola[i] = []
+            # nabor = np.arange(st_igralcev)
+            # j = 0
+        a = nabor[np.random.randint(len(nabor))]
+        b = nabor[np.random.randint(len(nabor))]
+        
+        if b!=a and (b in poraba[a]) == False:
+            c = nabor[np.random.randint(len(nabor))]
+            
+            if c!=a and b!=c and (c in poraba[b]) == False and (c in poraba[a]) == False:
+                d = nabor[np.random.randint(len(nabor))]
+                
+                if d!=a and d!=b and d!=c and (d in poraba[a]) == False and (d in poraba[b]) == False and (d in poraba[c]) == False:
+                    kola[i].append([a,b,c,d])
+                    
+                    nabor = np.delete(nabor, np.argwhere(nabor==a))
+                    nabor = np.delete(nabor, np.argwhere(nabor==b))
+                    nabor = np.delete(nabor, np.argwhere(nabor==c))
+                    nabor = np.delete(nabor, np.argwhere(nabor==d))
+                    
+                    poraba[a].append(b)
+                    poraba[a].append(c)
+                    poraba[a].append(d)
+                    
+                    poraba[b].append(a)
+                    poraba[b].append(c)
+                    poraba[b].append(d)
+                    
+                    poraba[c].append(b)
+                    poraba[c].append(a)
+                    poraba[c].append(d)
+                    
+                    poraba[d].append(b)
+                    poraba[d].append(c)
+                    poraba[d].append(a)
+                    
+                    
+                    
+    i = i+1            
+    
+    
+
+
+
+
+
+print(kola)
