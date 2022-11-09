@@ -1,80 +1,97 @@
-# Online Python compiler (interpreter) to run Python online.
-# Write Python 3 code in this online editor and run it.
 import numpy as np
+import tkinter as tk
+from tkinter import ttk
+import numpy as np
+from tkinter import messagebox
 
-kola = []
-poraba = []
-st_kol = 3
-st_igralcev = 24
+root = tk.Tk()
+root.title("Sampanec")
+my_notebook = ttk.Notebook(root)
+my_notebook.grid(row = 0, column = 0)
+my_frame1 = ttk.Frame(my_notebook)
+my_frame2 = ttk.Frame(my_notebook)
+my_notebook.add(my_frame1, text = "Generacija kol")
+my_notebook.add(my_frame2, text = "Nadalje")
+my_notebook.grid(row = 0, column = 0)
 
-for i in range(st_igralcev):
-    poraba.append([i])
-i = 0
-while i < st_kol:
-    kola.append([])
-    nabor = np.arange(st_igralcev)
+def generacija_kol(st_kol = 3, st_igralcev = 24):
+
+    kola = []
+    poraba = []
+    st_kol = st_kol
+    st_igralcev = st_igralcev
+    
+    if ((st_igralcev/4).is_integer()) == False:
+        raise Exception("Število igralcev ni deljivo s 4.")
+
+    [poraba.append([i]) for i in range(st_igralcev)] 
+    i = 0
     j = 0
-    k = 0
-    while len(nabor)>0:
-        j = j+1
-        k = k+1
+    while i < st_kol:
+        kola.append([])
+        nabor = np.arange(st_igralcev)        
+        k = 0
         
-        
-        if k == 100:
-            kola = [[]]
-            nabor = np.arange(st_igralcev)
-            poraba = []
-            for i in range(st_igralcev):
-                poraba.append([i])
-            j = 0
-            i = 0
-            k = 0
-        
-        # if j == 1000:
-            # kola[i] = []
-            # nabor = np.arange(st_igralcev)
-            # j = 0
-        a = nabor[np.random.randint(len(nabor))]
-        b = nabor[np.random.randint(len(nabor))]
-        
-        if b!=a and (b in poraba[a]) == False:
-            c = nabor[np.random.randint(len(nabor))]
+        while len(nabor)>0:
+            j = j+1
+            k = k+1            
             
-            if c!=a and b!=c and (c in poraba[b]) == False and (c in poraba[a]) == False:
-                d = nabor[np.random.randint(len(nabor))]
+            if k == 100:
+                kola = [[]]
+                nabor = np.arange(st_igralcev)
+                poraba = []
+                [poraba.append([i]) for i in range(st_igralcev)]
+                i = 0
+                k = 0
+            
+            if j == 5000:
+                raise Exception("Število kol je preveliko za tako število igralcev.")
+            
+            pol_dol_nabora = len(nabor)//2
+            a = nabor[np.random.randint(pol_dol_nabora)]
+            b = nabor[np.random.randint(pol_dol_nabora)]
+            
+            if b!=a and (b in poraba[a]) == False:
+                c = nabor[np.random.randint(pol_dol_nabora) + pol_dol_nabora]
                 
-                if d!=a and d!=b and d!=c and (d in poraba[a]) == False and (d in poraba[b]) == False and (d in poraba[c]) == False:
-                    kola[i].append([a,b,c,d])
+                if c!=a and b!=c and (c in poraba[b]) == False and (c in poraba[a]) == False:
+                    d = nabor[np.random.randint(pol_dol_nabora) + pol_dol_nabora]
                     
-                    nabor = np.delete(nabor, np.argwhere(nabor==a))
-                    nabor = np.delete(nabor, np.argwhere(nabor==b))
-                    nabor = np.delete(nabor, np.argwhere(nabor==c))
-                    nabor = np.delete(nabor, np.argwhere(nabor==d))
-                    
-                    poraba[a].append(b)
-                    poraba[a].append(c)
-                    poraba[a].append(d)
-                    
-                    poraba[b].append(a)
-                    poraba[b].append(c)
-                    poraba[b].append(d)
-                    
-                    poraba[c].append(b)
-                    poraba[c].append(a)
-                    poraba[c].append(d)
-                    
-                    poraba[d].append(b)
-                    poraba[d].append(c)
-                    poraba[d].append(a)
-                    
-                    
-                    
-    i = i+1            
+                    if d!=a and d!=b and d!=c and (d in poraba[a]) == False and (d in poraba[b]) == False and (d in poraba[c]) == False:
+                        kola[i].append([a,b,c,d])
+                        
+                        nabor = np.delete(nabor, np.argwhere(nabor==a))
+                        nabor = np.delete(nabor, np.argwhere(nabor==b))
+                        nabor = np.delete(nabor, np.argwhere(nabor==c))
+                        nabor = np.delete(nabor, np.argwhere(nabor==d))
+                        
+                        poraba[a].append(b)
+                        poraba[a].append(c)
+                        poraba[a].append(d)
+                        
+                        poraba[b].append(a)
+                        poraba[b].append(c)
+                        poraba[b].append(d)
+                        
+                        poraba[c].append(b)
+                        poraba[c].append(a)
+                        poraba[c].append(d)
+                        
+                        poraba[d].append(b)
+                        poraba[d].append(c)
+                        poraba[d].append(a)
+                        
+                        
+                        
+        i = i+1            
+    return kola
     
-    
+navodilo_st_kol = tk.Label(my_frame1, text = "Vpiši število kol: ").grid(row = 0,column = 1)
+stevilo_kol = tk.Entry(my_frame1, width = 20)
+stevilo_kol.grid(row = 0, column = 2)
 
+navodilo_st_igralcev = tk.Label(my_frame1, text = "Vpiši število igralcev: ").grid(row = 1,column = 1)
+stevilo_igralcev = tk.Entry(my_frame1, width = 20)
+stevilo_igralcev.grid(row = 1, column = 2)
 
-
-
-
-print(kola)
+root.mainloop()
