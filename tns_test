@@ -3,6 +3,9 @@ import tkinter as tk
 from tkinter import ttk
 import numpy as np
 from tkinter import messagebox
+import pandas as pd
+from os.path import exists
+import csv
 
 root = tk.Tk()
 root.title("Sampanec")
@@ -14,12 +17,24 @@ my_notebook.add(my_frame1, text = "Generacija kol")
 my_notebook.add(my_frame2, text = "Nadalje")
 my_notebook.grid(row = 0, column = 0)
 
-def generacija_kol(st_kol = 3, st_igralcev = 24):
+mapa_za_shranjevanje = "M:\\INS-ANSYS\\GasperH_stud\\"
 
+navodilo_st_kol = tk.Label(my_frame1, text = "Vpiši število kol: ").grid(row = 0,column = 1)
+stevilo_kol = tk.Entry(my_frame1, width = 20)
+stevilo_kol.grid(row = 0, column = 2)
+
+navodilo_st_igralcev = tk.Label(my_frame1, text = "Vpiši število igralcev: ").grid(row = 1,column = 1)
+stevilo_igralcev = tk.Entry(my_frame1, width = 20)
+stevilo_igralcev.grid(row = 1, column = 2)
+
+def zapisi(podatki,st_kol, st_igralcev, ime = "test"):
+    podatki.insert(0, [st_kol, st_igralcev])
+    df = pd.DataFrame(podatki)
+    df.to_csv(str(mapa_za_shranjevanje + ime + ".txt"), sep = "\t", encoding='utf-8', index = False, header = False)
+
+def generacija_kol(st_kol = 3, st_igralcev = 24):
     kola = []
     poraba = []
-    st_kol = st_kol
-    st_igralcev = st_igralcev
     
     if ((st_igralcev/4).is_integer()) == False:
         raise Exception("Število igralcev ni deljivo s 4.")
@@ -44,7 +59,7 @@ def generacija_kol(st_kol = 3, st_igralcev = 24):
                 i = 0
                 k = 0
             
-            if j == 5000:
+            if j == 15000:
                 raise Exception("Število kol je preveliko za tako število igralcev.")
             
             pol_dol_nabora = len(nabor)//2
@@ -83,15 +98,33 @@ def generacija_kol(st_kol = 3, st_igralcev = 24):
                         
                         
                         
-        i = i+1            
-    return kola
-    
-navodilo_st_kol = tk.Label(my_frame1, text = "Vpiši število kol: ").grid(row = 0,column = 1)
-stevilo_kol = tk.Entry(my_frame1, width = 20)
-stevilo_kol.grid(row = 0, column = 2)
+        i = i+1
+    return kola        
 
-navodilo_st_igralcev = tk.Label(my_frame1, text = "Vpiši število igralcev: ").grid(row = 1,column = 1)
-stevilo_igralcev = tk.Entry(my_frame1, width = 20)
-stevilo_igralcev.grid(row = 1, column = 2)
+def generacija_in_zapis_kol():
+    global st_kol
+    global st_igralcev
+    global kola
+    st_kol = int(stevilo_kol.get())
+    st_igralcev = int(stevilo_igralcev.get())
+    file_exists = exists(mapa_za_shranjevanje + "kola.txt") #Vrne True, če so kola že generirana
+    if file_exists:
+        kola_files = pd.read_csv(mapa_za_shranjevanje + 'kola.txt', sep = "\t", encoding = 'utf-8', header = None)
+        kola_prebrano = []
+        st_kol = int(kola_files[0][0])
+        st_igralcev = int(kola_files[1][0])
+        for i in range(st_igralcev//4):
+            for j in range(st_kol):
+                kola_prebrano.append(kola_files[i][j+1])
+        print(kola_files[0])
+        print(kola_prebrano)
+        #print(file_kola[-1])
+    else:
+        kola = generacija_kol(st_kol, st_igralcev)
+        print(kola)
+        zapisi(kola, st_kol = st_kol, st_igralcev = st_igralcev, ime = "kola")
+
+gumb_za_kola = tk.Button(my_frame1, text = "Generiraj kola", command = generacija_in_zapis_kol)
+gumb_za_kola.grid(row = 2, column = 2)
 
 root.mainloop()
