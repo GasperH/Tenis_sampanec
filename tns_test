@@ -17,7 +17,7 @@ my_notebook.add(my_frame1, text = "Generacija kol")
 my_notebook.add(my_frame2, text = "Nadalje")
 my_notebook.grid(row = 0, column = 0)
 
-mapa_za_shranjevanje = "M:\\INS-ANSYS\\GasperH_stud\\"
+mapa_za_shranjevanje = "C:\\Users\\LENOVO\\Documents\\GitHub\\Tenis_sampanec"
 
 navodilo_st_kol = tk.Label(my_frame1, text = "Vpiši število kol: ").grid(row = 0,column = 1)
 stevilo_kol = tk.Entry(my_frame1, width = 20)
@@ -31,75 +31,88 @@ def zapisi(podatki,st_kol, st_igralcev, ime = "test"):
     podatki.insert(0, [st_kol, st_igralcev])
     df = pd.DataFrame(podatki)
     df.to_csv(str(mapa_za_shranjevanje + ime + ".txt"), sep = "\t", encoding='utf-8', index = False, header = False)
+    
+def zapisi_le_kola(podatki, ime = "generirana_kola"):
+    df = pd.DataFrame(podatki)
+    df.to_csv(str(mapa_za_shranjevanje + ime + ".txt"), sep = "\t", encoding='utf-8', index = False, header = False)
 
 def generacija_kol(st_kol = 3, st_igralcev = 24):
     kola = []
     poraba = []
+    breaker = False
     
     if ((st_igralcev/4).is_integer()) == False:
-        raise Exception("Število igralcev ni deljivo s 4.")
-
-    [poraba.append([i]) for i in range(st_igralcev)] 
-    i = 0
-    j = 0
-    while i < st_kol:
-        kola.append([])
-        nabor = np.arange(st_igralcev)        
-        k = 0
-        
-        while len(nabor)>0:
-            j = j+1
-            k = k+1            
+        tk.messagebox.showinfo(title="Warning", message="Število igralcev ni deljivo s 4.")
+    
+    else: # če število igralcev je deljivo s 4
+        [poraba.append([i]) for i in range(st_igralcev)] 
+        i = 0
+        j = 0
+        while i < st_kol: #dokler niso vsa kola definirana
+            kola.append([])
+            nabor = np.arange(st_igralcev)        
+            k = 0
             
-            if k == 100:
-                kola = [[]]
-                nabor = np.arange(st_igralcev)
-                poraba = []
-                [poraba.append([i]) for i in range(st_igralcev)]
-                i = 0
-                k = 0
-            
-            if j == 15000:
-                raise Exception("Število kol je preveliko za tako število igralcev.")
-            
-            pol_dol_nabora = len(nabor)//2
-            a = nabor[np.random.randint(pol_dol_nabora)]
-            b = nabor[np.random.randint(pol_dol_nabora)]
-            
-            if b!=a and (b in poraba[a]) == False:
-                c = nabor[np.random.randint(pol_dol_nabora) + pol_dol_nabora]
+            while len(nabor)>0: #dokler niso vsi igralci v kolu izbrani
+                j = j+1
+                k = k+1            
                 
-                if c!=a and b!=c and (c in poraba[b]) == False and (c in poraba[a]) == False:
-                    d = nabor[np.random.randint(pol_dol_nabora) + pol_dol_nabora]
+                if k == 150: #če je že velikokrat probal generirati kolo
+                    kola = [[]]
+                    nabor = np.arange(st_igralcev)
+                    poraba = []
+                    [poraba.append([i]) for i in range(st_igralcev)]
+                    i = 0
+                    k = 0
+                
+                elif j == 50000: #Če je že tolikokrat probal da izgleda ne gre
+                    tk.messagebox.showinfo(title="Warning", message="Število kol je preveliko za tako število igralcev.")
+                    breaker = True
+                
+                else:
+                    pol_dol_nabora = len(nabor)//2
+                    a = nabor[np.random.randint(pol_dol_nabora)]
+                    b = nabor[np.random.randint(pol_dol_nabora)]
                     
-                    if d!=a and d!=b and d!=c and (d in poraba[a]) == False and (d in poraba[b]) == False and (d in poraba[c]) == False:
-                        kola[i].append([a,b,c,d])
+                    if b!=a and (b in poraba[a]) == False:
+                        c = nabor[np.random.randint(pol_dol_nabora) + pol_dol_nabora]
                         
-                        nabor = np.delete(nabor, np.argwhere(nabor==a))
-                        nabor = np.delete(nabor, np.argwhere(nabor==b))
-                        nabor = np.delete(nabor, np.argwhere(nabor==c))
-                        nabor = np.delete(nabor, np.argwhere(nabor==d))
-                        
-                        poraba[a].append(b)
-                        poraba[a].append(c)
-                        poraba[a].append(d)
-                        
-                        poraba[b].append(a)
-                        poraba[b].append(c)
-                        poraba[b].append(d)
-                        
-                        poraba[c].append(b)
-                        poraba[c].append(a)
-                        poraba[c].append(d)
-                        
-                        poraba[d].append(b)
-                        poraba[d].append(c)
-                        poraba[d].append(a)
-                        
-                        
-                        
-        i = i+1
-    return kola        
+                        if c!=a and b!=c and (c in poraba[b]) == False and (c in poraba[a]) == False:
+                            d = nabor[np.random.randint(pol_dol_nabora) + pol_dol_nabora]
+                            
+                            if d!=a and d!=b and d!=c and (d in poraba[a]) == False and (d in poraba[b]) == False and (d in poraba[c]) == False:
+                                kola[i].append([a,b,c,d])
+                                
+                                nabor = np.delete(nabor, np.argwhere(nabor==a))
+                                nabor = np.delete(nabor, np.argwhere(nabor==b))
+                                nabor = np.delete(nabor, np.argwhere(nabor==c))
+                                nabor = np.delete(nabor, np.argwhere(nabor==d))
+                                
+                                poraba[a].append(b)
+                                poraba[a].append(c)
+                                poraba[a].append(d)
+                                
+                                poraba[b].append(a)
+                                poraba[b].append(c)
+                                poraba[b].append(d)
+                                
+                                poraba[c].append(b)
+                                poraba[c].append(a)
+                                poraba[c].append(d)
+                                
+                                poraba[d].append(b)
+                                poraba[d].append(c)
+                                poraba[d].append(a)
+                if breaker :
+                    break
+            
+            if breaker :
+                kola = []
+                break
+
+            
+            i = i+1
+        return kola        
 
 def generacija_in_zapis_kol():
     global st_kol
@@ -107,22 +120,19 @@ def generacija_in_zapis_kol():
     global kola
     st_kol = int(stevilo_kol.get())
     st_igralcev = int(stevilo_igralcev.get())
-    file_exists = exists(mapa_za_shranjevanje + "kola.txt") #Vrne True, če so kola že generirana
+    file_exists = exists("kola.txt") #Vrne True, če so kola že generirana
     if file_exists:
-        kola_files = pd.read_csv(mapa_za_shranjevanje + 'kola.txt', sep = "\t", encoding = 'utf-8', header = None)
+        kola_files = pd.read_csv('kola.txt', sep = "\t", encoding = 'utf-8', header = None)
         kola_prebrano = []
         st_kol = int(kola_files[0][0])
         st_igralcev = int(kola_files[1][0])
         for i in range(st_igralcev//4):
             for j in range(st_kol):
                 kola_prebrano.append(kola_files[i][j+1])
-        print(kola_files[0])
-        print(kola_prebrano)
-        #print(file_kola[-1])
     else:
         kola = generacija_kol(st_kol, st_igralcev)
         print(kola)
-        zapisi(kola, st_kol = st_kol, st_igralcev = st_igralcev, ime = "kola")
+        zapisi_le_kola(kola, ime = "kola")
 
 gumb_za_kola = tk.Button(my_frame1, text = "Generiraj kola", command = generacija_in_zapis_kol)
 gumb_za_kola.grid(row = 2, column = 2)
