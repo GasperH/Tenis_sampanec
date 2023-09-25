@@ -1,11 +1,7 @@
 import numpy as np
 import tkinter as tk
 from tkinter import ttk
-import numpy as np
-from tkinter import messagebox
-import pandas as pd
-from os.path import exists
-import csv
+import os
 
 root = tk.Tk()
 root.title("Sampanec")
@@ -30,20 +26,11 @@ navodilo_st_igralcev = tk.Label(my_frame1, text = "Vpiši število igralcev: ").
 stevilo_igralcev = tk.Entry(my_frame1, width = 20)
 stevilo_igralcev.grid(row = 1, column = 2)
 
-def zapisi(podatki,st_kol, st_igralcev, ime = "test"):
-    podatki.insert(0, [st_kol, st_igralcev])
-    df = pd.DataFrame(podatki)
-    df.to_csv(str(mapa_za_shranjevanje + ime + ".txt"), sep = "\t", encoding='utf-8', index = False, header = False)
-    
-def zapisi_le_kola(podatki, ime = "generirana_kola"):
-    df = pd.DataFrame(podatki)
-    df.to_csv(str(ime + ".txt"), sep = "\t", encoding='utf-8', index = False, header = False)
-
 def generacija_kol(st_kol = 3, st_igralcev = 24):
     kola = []
     poraba = []
     breaker = False
-    print(stevilo_igralcev)
+    #print(stevilo_igralcev)
     global preveliko_st_kol
     global ni_deljivo_s_stiri
     preveliko_st_kol = False
@@ -132,6 +119,10 @@ def generacija_in_zapis_kol():
     global prvic
     global navodilo_prvi_boben
     global navodilo_drugi_boben
+    
+    if os.path.exists("vmes_razpored.txt"): #pobrise datoteko z razporedom, če slučajno obstaja
+        os.remove("vmes_razpored.txt")
+    
     try:
         st_kol = int(stevilo_kol.get())
         st_igralcev = int(stevilo_igralcev.get())
@@ -146,6 +137,7 @@ def generacija_in_zapis_kol():
             imena_igralcev_entry = []
             navodilo_prvi_boben = tk.Label(my_frame1, text = "Prvi boben").grid(row = 3, column = 0)
             navodilo_drugi_boben = tk.Label(my_frame1, text = "Drugi boben").grid(row = 3, column = 2)
+            
             for i in range(st_igralcev//2): #naredijo se prostori za imena za prvi boben
                 imena_igralcev_entry.append(tk.Entry(my_frame1, width = 20))
                 imena_igralcev_entry[i].grid(row = 4+2*i, column = 0)
@@ -163,8 +155,10 @@ def generacija_in_zapis_kol():
                     with open("vmes_razpored.txt", "a") as f:
                         f.write("\n")
                         f.write('\t'.join(str(kola[i][j])))
-                
+                           
+            gumb_za_pobrati_imena["state"] = "normal"
             prvic = False
+            
     except:
         tk.messagebox.showinfo(title="Warning", message="Vpišite pravilno število kol in igralcev")
         
@@ -173,6 +167,10 @@ def shrani_imena_v_spomin():
     global rezultati_entry
     rezultati_entry = []
     imena_igralcev = []
+    
+    if os.path.exists("razpored.txt"): #pobrise datoteko z razporedom, če slučajno obstaja
+        os.remove("razpored.txt")
+    
     for i in range(st_igralcev):
         #imena_igralcev.append(str(i) + ". igralec")
         imena_igralcev.append(imena_igralcev_entry[i].get())    
@@ -208,6 +206,9 @@ def shrani_imena_v_spomin():
     
 def preberi_rezultate_in_sestej():
     global rezultati
+    global prvic_sestevam
+    global izpis_rezultatov_imena
+    global izpis_rezultatov_tocke
     rezultati = []
     try:
         for i in range(st_kol):
@@ -221,6 +222,15 @@ def preberi_rezultate_in_sestej():
         igralci_in_st_tock = []    
         [igralci_in_st_tock.append([imena_igralcev[i],0]) for i in range(st_igralcev)]
         
+        if prvic_sestevam == False:
+            for i in range(st_igralcev):
+                izpis_rezultatov_imena[i].destroy()
+                izpis_rezultatov_tocke[i].destroy()
+        
+        izpis_rezultatov_imena = np.empty(st_igralcev, dtype = object)
+        izpis_rezultatov_tocke = np.empty(st_igralcev, dtype = object)
+    
+        
         for i in range(st_kol):
             for j in range(st_igralcev//4):
                 for k in range(2):
@@ -229,7 +239,7 @@ def preberi_rezultate_in_sestej():
         
         def takeSecond(elem):
             return elem[1]
-
+    
         igralci_in_st_tock.sort(key= takeSecond, reverse = True)
         izpis_prve_vrstice = ttk.Label(my_frame3, text = "Mesto").grid(row = 0, column = 0)
         izpis_prve_vrstice = ttk.Label(my_frame3, text = "Ime").grid(row = 0, column = 2)
@@ -238,13 +248,18 @@ def preberi_rezultate_in_sestej():
             izpis_rezultatov = ttk.Label(my_frame3, text = str(i + 1) + ".").grid(row = i+1, column = 0)
             izpis_rezultatov = ttk.Label(my_frame3, text = "      ").grid(row = i+1, column = 1)
             izpis_rezultatov = ttk.Label(my_frame3, text = igralci_in_st_tock[i][0]).grid(row = i+1, column = 2)
+            izpis_rezultatov_imena[i] = ttk.Label(my_frame3, text = igralci_in_st_tock[i][0])
             izpis_rezultatov = ttk.Label(my_frame3, text = "      ").grid(row = i+1, column = 3)
             izpis_rezultatov = ttk.Label(my_frame3, text = igralci_in_st_tock[i][1]).grid(row = i+1, column = 4)
+            izpis_rezultatov_tocke[i] = ttk.Label(my_frame3, text = igralci_in_st_tock[i][1])
+            
+        prvic_sestevam = False
             
     except:
         tk.messagebox.showinfo(title="Warning", message="Pravilno vpišite rezultate")
 
 prvic = True
+prvic_sestevam = True
 
 gumb_za_kola = tk.Button(my_frame1, text = "Število kol in igralcev določeno", command = generacija_in_zapis_kol)
 gumb_za_kola.grid(row = 2, column = 2)
