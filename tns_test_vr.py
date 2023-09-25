@@ -247,11 +247,16 @@ def preberi_rezultate_in_sestej():
         for i in range(len(igralci_in_st_tock)):
             izpis_rezultatov = ttk.Label(my_frame3, text = str(i + 1) + ".").grid(row = i+1, column = 0)
             izpis_rezultatov = ttk.Label(my_frame3, text = "      ").grid(row = i+1, column = 1)
-            izpis_rezultatov = ttk.Label(my_frame3, text = igralci_in_st_tock[i][0]).grid(row = i+1, column = 2)
-            izpis_rezultatov_imena[i] = ttk.Label(my_frame3, text = igralci_in_st_tock[i][0])
+            
+            izpis_rezultatov = ttk.Label(my_frame3, text = igralci_in_st_tock[i][0])
+            izpis_rezultatov.grid(row = i+1, column = 2)
+            izpis_rezultatov_imena[i] = izpis_rezultatov
+            
             izpis_rezultatov = ttk.Label(my_frame3, text = "      ").grid(row = i+1, column = 3)
-            izpis_rezultatov = ttk.Label(my_frame3, text = igralci_in_st_tock[i][1]).grid(row = i+1, column = 4)
-            izpis_rezultatov_tocke[i] = ttk.Label(my_frame3, text = igralci_in_st_tock[i][1])
+            
+            izpis_rezultatov = ttk.Label(my_frame3, text = igralci_in_st_tock[i][1])
+            izpis_rezultatov.grid(row = i+1, column = 4)
+            izpis_rezultatov_tocke[i] = izpis_rezultatov
             
         prvic_sestevam = False
             
